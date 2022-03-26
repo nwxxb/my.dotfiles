@@ -35,6 +35,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'preservim/nerdtree'
 
   " Plug 'vimsence/vimsence'
+  " see git changes on gutter
+  Plug 'airblade/vim-gitgutter'
 call plug#end()
 
 " stop youcompleteme to open helper on split window
@@ -91,6 +93,8 @@ set modelines=0
 
 " Show line numbers
 set number
+set signcolumn=yes
+
 
 " Show file stats
 set ruler
@@ -185,3 +189,9 @@ let g:solarized_termtrans=1
 
 " Start NERDTree and leave the cursor in it
 " autocmd VimEnter * NERDTree
+" git gutter
+highlight clear SignColumn
+highlight GitGutterAdd ctermfg=2
+highlight GitGutterChange ctermfg=3
+highlight GitGutterDelete ctermfg=1
+highlight GitGutterChangeDelete ctermfg=4
