@@ -34,19 +34,19 @@ call plug#begin('~/.vim/plugged')
   " nerdtree instead of netrw
   Plug 'preservim/nerdtree'
 
+  " fzf
+  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+  Plug 'junegunn/fzf.vim'
+
   " Plug 'vimsence/vimsence'
   " see git changes on gutter
   Plug 'airblade/vim-gitgutter'
+
+  " vim wrapper for test
+  Plug 'vim-test/vim-test'
+  " vimux for vim-test
+  Plug 'benmills/vimux'
 call plug#end()
-
-" stop youcompleteme to open helper on split window
-let g:ycm_autoclose_preview_window_after_insertion = 1
-
-" css support for YCM
-let g:ycm_semantic_triggers = {
-    \   'css': [ 're!^', 're!^\s+', ': ' ],
-    \   'scss': [ 're!^', 're!^\s+', ': ' ],
-    \ }
 
 " Turn on syntax highlighting
 syntax enable
@@ -57,6 +57,19 @@ filetype plugin indent on
 " TODO: Pick a leader key
 let mapleader = ","
 
+" =============== vim-test
+let test#strategy='vimux'
+let test#ruby#runner='rspec'
+let test#ruby#rspec#executable='RUBYOPT="-W0" spring rspec -fd'
+" let test#ruby#rails#executable='docker-compose exec -e RAILS_ENV=test rspec'
+" mapping for vim-test
+nmap <silent> t<leader>n :TestNearest<CR>
+nmap <silent> t<leader>f :TestFile<CR>
+nmap <silent> t<leader>l :TestLast<CR>
+nmap <silent> t<leader>a :TestSuite<CR>
+nmap <silent> t<leader>v :TestVisit<CR>
+" =============== end
+
 " Better tabbing
 vnoremap < <gv
 vnoremap > >gv
@@ -65,6 +78,7 @@ vnoremap > >gv
 set splitbelow
 set splitright
 
+" =============== vim-tmux-navigator 
 " Better window navigation
 " if you use tmux, please read vim-tmux-navigator docs
 set timeout ttimeoutlen=50
@@ -87,6 +101,18 @@ nnoremap <M-j> :resize -2<CR>
 nnoremap <M-k> :resize +2<CR>
 nnoremap <M-h> :vertical resize -2<CR>
 nnoremap <M-l> :vertical resize +2<CR>
+" =============== end
+
+" =============== YOU COMPLETE ME
+" stop youcompleteme to open helper on split window
+let g:ycm_autoclose_preview_window_after_insertion = 1
+
+" css support for YCM
+let g:ycm_semantic_triggers = {
+    \   'css': [ 're!^', 're!^\s+', ': ' ],
+    \   'scss': [ 're!^', 're!^\s+', ': ' ],
+    \ }
+" =============== end
 
 " Security
 set modelines=0
@@ -94,7 +120,6 @@ set modelines=0
 " Show line numbers
 set number
 set signcolumn=yes
-
 
 " Show file stats
 set ruler
@@ -115,18 +140,18 @@ set softtabstop=2
 set expandtab
 set noshiftround
 
-" ======== https://www.youtube.com/watch?v=XA2WjJbmmoM&list=WL&index=54 ======
 " Finding Files
 " Search down into subfolders
 " Provides tab-completion for all file-related tasks
 set path+=**
 set autochdir
+" =============== vim-rooter
 " vim-rooter: change to file's directory for non-project files
 let g:rooter_change_directory_for_non_project_files = 'current'
+" =============== end
 
 " Display all matching files when we tab complete
 set wildmenu
-" ======== end =============
 
 " Cursor motion
 set scrolloff=3
@@ -183,15 +208,20 @@ set t_Co=256
 set background=dark
 let g:solarized_termcolors=256
 let g:solarized_termtrans=1
+
 " put https://raw.github.com/altercation/vim-colors-solarized/master/colors/solarized.vim
 " in ~/.vim/colors/ and uncomment:
 " colorscheme solarized
 
 " Start NERDTree and leave the cursor in it
-" autocmd VimEnter * NERDTree
-" git gutter
+autocmd VimEnter * NERDTree
+
+" =============== git gutter
 highlight clear SignColumn
 highlight GitGutterAdd ctermfg=2
 highlight GitGutterChange ctermfg=3
 highlight GitGutterDelete ctermfg=1
 highlight GitGutterChangeDelete ctermfg=4
+" =============== end
+
+
