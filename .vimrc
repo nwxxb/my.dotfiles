@@ -12,6 +12,8 @@ call plug#begin('~/.vim/plugged')
   " ruby & RoR support
   Plug 'vim-ruby/vim-ruby'
   Plug 'tpope/vim-rails'
+  Plug 'tpope/vim-bundler'
+  Plug 'tpope/vim-rvm'
 
   " auto close [], (), etc...
   Plug 'jiangmiao/auto-pairs'
@@ -27,7 +29,9 @@ call plug#begin('~/.vim/plugged')
 
   " nerdtree instead of netrw
   Plug 'preservim/nerdtree'
-
+  " use dirvish (vinegar) instead nerdtree (oil)
+  " Plug 'justinmk/vim-dirvish'
+  " Plug 'roginfarrer/vim-dirvish-dovish', {'branch': 'main'}
   " fzf
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
   Plug 'junegunn/fzf.vim'
@@ -43,7 +47,6 @@ call plug#begin('~/.vim/plugged')
 
   " autocomplete
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
 call plug#end()
 
 " Turn on syntax highlighting
@@ -58,8 +61,8 @@ let mapleader = ","
 " =============== vim-test
 let test#strategy='vimux'
 let test#ruby#runner='rspec'
-let test#ruby#rspec#executable='RUBYOPT="-W0" spring rspec -fd'
-" let test#ruby#rails#executable='docker-compose exec -e RAILS_ENV=test rspec'
+let test#ruby#rspec#executable='RUBYOPT="-W0" rspec -fd'
+" let test#ruby#rspec#executable="docker compose --env-file .env.docker exec -e RAILS_ENV=test api bundle exec rspec"
 " mapping for vim-test
 nmap <silent> t<leader>n :TestNearest<CR>
 nmap <silent> t<leader>f :TestFile<CR>
@@ -75,7 +78,6 @@ vnoremap > >gv
 " More natural split opening
 set splitbelow
 set splitright
-
 
 " Security
 set modelines=0
@@ -362,6 +364,12 @@ nnoremap <A-h> :vertical resize -2<CR>
 nnoremap <A-l> :vertical resize +2<CR>
 " =============== end
 
+
+" =============== vim dirvish
+" let g:loaded_netrw = 1
+" let g:loaded_netrwPlugin = 1
+" =============== end
+"
 " put https://raw.github.com/altercation/vim-colors-solarized/master/colors/solarized.vim
 " in ~/.vim/colors/ and uncomment:
 " colorscheme solarized
