@@ -1,6 +1,8 @@
 # my.dotfiles
+I want to reap what I stow
+
 ```bash
-stow --simulate --verbose . # or specify package (nvim, tmux, alacritty, etc...)
+stow --simulate --verbose [PACKAGES (nvim, tmux, alacritty, etc)]
 
 ```
 
