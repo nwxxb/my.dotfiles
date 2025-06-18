@@ -1,5 +1,22 @@
--- edit this config using user command `:e $MYVIMRC`
+local function load_env_file(path)
+  local file = io.open(path, "r")
+  if not file then
+    return
+  end
+
+  for line in file:lines() do
+    local key, value = line:match("^([%w_]+)%s*=%s*(.+)$")
+    if key and value then
+      vim.fn.setenv(key, value)
+    end
+  end
+
+  file:close()
+end
+
+-- edit this config by calling user command `:e $MYVIMRC`
 vim.env.MYVIMRC = vim.fn.stdpath("config") .. "/init.lua"
+load_env_file(vim.fn.stdpath("config") .. "/.env")
 
 -- [[ Setting options ]]
 -- Set <space> as the leader key
@@ -322,6 +339,36 @@ require("lazy").setup({
           },
         }
       end
+    },
+    {
+      "epwalsh/obsidian.nvim",
+      version = "*",  -- recommended, use latest release instead of latest commit
+      lazy = true,
+      event = {
+        -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
+        -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/*.md"
+        -- refer to `:h file-pattern` for more examples
+        "BufReadPre " .. vim.fn.expand(vim.env.OBSIDIAN_PERSONAL_NOTES_DIR) .. "*.md",
+        "BufNewFile " .. vim.fn.expand(vim.env.OBSIDIAN_PERSONAL_NOTES_DIR) .. "*.md",
+      },
+      dependencies = {
+        -- Required.
+        "nvim-lua/plenary.nvim",
+      },
+      opts = {
+        ui = { enable = false },
+        workspaces = {
+          {
+            name = "main",
+            path = vim.fn.expand(vim.env.OBSIDIAN_PERSONAL_NOTES_DIR)
+          },
+        },
+      },
+    },
+    {
+      'MeanderingProgrammer/render-markdown.nvim',
+      dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+      opts = {},
     }
   },
   checker = { enabled = true },
