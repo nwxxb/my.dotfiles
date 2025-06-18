@@ -1,0 +1,39 @@
+[env]
+TERM = "xterm-256color"
+
+[font]
+size = 9
+
+# (Github Dark) Colors for Alacritty
+
+[colors]
+# Default colors
+primary.background = '0x24292e'
+primary.foreground = '0xe6edf3'
+
+# Cursor colors
+#
+# These will only be used when the `custom_cursor_colors` field is set to `true`.
+cursor.text = '0x30363d'
+cursor.cursor = '0xe6edf3'
+
+# Normal colors
+normal.black = '0x484f58'
+normal.red = '0xff7b72'
+normal.green = '0x3fb950'
+normal.yellow = '0xd29922'
+normal.blue = '0x58a6ff'
+normal.magenta = '0xbc8cff'
+normal.cyan = '0x39c5cf'
+normal.white = '0xb1bac4'
+
+# Bright colors
+bright.black = '0x6e7681'
+bright.red = '0xffa198'
+bright.green = '0x56d364'
+bright.yellow = '0xe3b341'
+bright.blue = '0x79c0ff'
+bright.magenta = '0xbc8cff'
+bright.cyan = '0x39c5cf'
+bright.white = '0xb1bac4'
+
