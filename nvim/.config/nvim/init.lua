@@ -123,7 +123,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out, "WarningMsg" },
+      { out,                            "WarningMsg" },
       { "\nPress any key to exit..." },
     }, true, {})
     vim.fn.getchar()
@@ -207,7 +207,7 @@ require("lazy").setup({
 
         -- Document existing key chains
         spec = {
-          { "<leader>c", group = "[C]ode", mode = { "n", "x" } },
+          { "<leader>c", group = "[C]ode",     mode = { "n", "x" } },
           { "<leader>d", group = "[D]ocument" },
           { "<leader>r", group = "[R]ename" },
           { "<leader>s", group = "[S]earch" },
@@ -281,6 +281,46 @@ require("lazy").setup({
           },
           opts_extend = { "sources.default" },
         },
+        {
+          'stevearc/conform.nvim',
+          event = { 'BufWritePre' },
+          cmd = { 'ConformInfo' },
+          opts = {
+            notify_on_error = false,
+            format_on_save = function(bufnr)
+              -- Disable "format_on_save lsp_fallback" for languages that don't
+              -- have a well standardized coding style. You can add additional
+              -- languages here or re-enable it for the disabled ones.
+              local disable_filetypes = { c = true, cpp = true }
+              if disable_filetypes[vim.bo[bufnr].filetype] then
+                return nil
+              else
+                return {
+                  timeout_ms = 500,
+                  lsp_format = 'fallback',
+                }
+              end
+            end,
+            formatters_by_ft = {
+              -- lua = { 'stylua' },
+              -- Conform can also run multiple formatters sequentially
+              -- python = { "isort", "black" },
+              --
+              -- You can use 'stop_after_first' to run the first available formatter from the list
+              -- javascript = { "prettierd", "prettier", stop_after_first = true },
+            },
+          },
+          keys = {
+            {
+              '<leader>f',
+              function()
+                require('conform').format { async = true, lsp_format = 'fallback' }
+              end,
+              mode = '',
+              desc = '[F]ormat buffer',
+            },
+          },
+        }
       },
       config = function()
         local capabilities = require("blink.cmp").get_lsp_capabilities()
@@ -303,8 +343,8 @@ require("lazy").setup({
       branch = 'master',
       lazy = false,
       build = ":TSUpdate",
-      config = function ()
-        require'nvim-treesitter.configs'.setup {
+      config = function()
+        require 'nvim-treesitter.configs'.setup {
           -- A list of parser names, or "all" (the listed parsers MUST always be installed)
           ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "markdown", "markdown_inline", "ruby", "editorconfig" },
 
@@ -342,7 +382,7 @@ require("lazy").setup({
     },
     {
       "epwalsh/obsidian.nvim",
-      version = "*",  -- recommended, use latest release instead of latest commit
+      version = "*", -- recommended, use latest release instead of latest commit
       lazy = true,
       event = {
         -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
