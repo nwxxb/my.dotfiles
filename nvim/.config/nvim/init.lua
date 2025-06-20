@@ -278,6 +278,12 @@ require("lazy").setup({
             --
             -- See the fuzzy documentation for more information
             fuzzy = { implementation = "prefer_rust_with_warning" },
+
+            -- config cmdline's behavior to match the default mode
+            cmdline = {
+              keymap = { preset = 'inherit' },
+              completion = { menu = { auto_show = true } },
+            },
           },
           opts_extend = { "sources.default" },
         },
