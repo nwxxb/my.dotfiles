@@ -38,4 +38,4 @@ bright.cyan = '0x39c5cf'
 bright.white = '0xb1bac4'
 
 [bell]
-command = { program = "paplay", args = ["/usr/share/sounds/gnome/default/alerts/alarm_ring.ogg"] }
+command = { program = "paplay", args = ["/usr/share/sounds/gnome/default/alerts/glass.ogg"] }
