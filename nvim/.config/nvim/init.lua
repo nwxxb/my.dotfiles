@@ -415,7 +415,14 @@ require("lazy").setup({
         "nvim-lua/plenary.nvim",
       },
       opts = {
-        ui = { enable = false },
+        ui = {
+          enable = false,
+          checkboxes = {
+            [" "] = { char = "☐", hl_group = "ObsidianTodo" },
+            ["-"] = { char = "☐", hl_group = "ObsidianTodo" },
+            ["x"] = { char = "✔", hl_group = "ObsidianDone" },
+          }
+        },
         workspaces = {
           {
             name = "main",
