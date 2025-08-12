@@ -79,6 +79,12 @@ vim.opt.scrolloff = 10
 
 -- enable conceal (e.g. for obsidian.nvim)
 vim.opt.conceallevel = 2
+vim.api.nvim_create_autocmd({ "FileType" }, {
+  pattern = { "json", "jsonc" },
+  callback = function()
+    vim.wo.conceallevel = 0
+  end,
+})
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -109,6 +115,29 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
   callback = function()
     vim.highlight.on_yank()
+  end,
+})
+
+-- Create augroup for fold management
+local fold_group = vim.api.nvim_create_augroup("fold-management", { clear = true })
+
+-- Save view (including folds) when leaving a buffer
+vim.api.nvim_create_autocmd("BufWinLeave", {
+  desc = "Save view when leaving buffer",
+  group = fold_group,
+  pattern = "*.*",
+  callback = function()
+    vim.cmd("mkview")
+  end,
+})
+
+-- Load view (including folds) when entering a buffer
+vim.api.nvim_create_autocmd("BufWinEnter", {
+  desc = "Load view when entering buffer",
+  group = fold_group,
+  pattern = "*.*",
+  callback = function()
+    vim.cmd("silent! loadview")
   end,
 })
 
