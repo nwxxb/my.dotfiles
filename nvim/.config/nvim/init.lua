@@ -464,6 +464,34 @@ require("lazy").setup({
       'MeanderingProgrammer/render-markdown.nvim',
       dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
       opts = {},
+    },
+    {
+      "m00qek/baleia.nvim",
+      version = "*",
+      config = function()
+        vim.g.baleia = require("baleia").setup({})
+
+        -- Command to colorize the current buffer
+        vim.api.nvim_create_user_command("ColorizeAscii", function()
+          vim.g.baleia.once(vim.api.nvim_get_current_buf())
+        end, { bang = true })
+
+        -- Command to show logs
+        vim.api.nvim_create_user_command("BaleiaLogs", vim.g.baleia.logger.show, { bang = true })
+      end,
+    },
+    {
+      "hedyhli/markdown-toc.nvim",
+      ft = "markdown",  -- Lazy load on markdown filetype
+      cmd = { "Mtoc" }, -- Or, lazy load on "Mtoc" command
+      opts = {
+        -- Your configuration here (optional)
+      },
+    },
+    {
+      'SCJangra/table-nvim',
+      ft = 'markdown',
+      opts = {},
     }
   },
   checker = { enabled = true },
