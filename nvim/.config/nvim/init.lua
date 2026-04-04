@@ -16,6 +16,7 @@ end
 
 -- edit this config by calling user command `:e $MYVIMRC`
 vim.env.MYVIMRC = vim.fn.stdpath("config") .. "/init.lua"
+vim.env.MYORGS = "~/orgfiles/"
 load_env_file(vim.fn.stdpath("config") .. "/.env")
 
 -- [[ Setting options ]]
@@ -86,6 +87,11 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   end,
 })
 
+-- netrw related config:
+-- default to tree-listing view
+vim.g.netrw_liststyle = 3
+
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -95,6 +101,9 @@ vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 -- Diagnostic keymaps
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+
+-- Open Vexplore
+vim.keymap.set("n", "<leader>e", '<cmd>30Lexplore<CR>')
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -358,33 +367,68 @@ require("lazy").setup({
         }
       },
       config = function()
-        local capabilities = require("blink.cmp").get_lsp_capabilities()
-        local lspconfig = require("lspconfig")
-        -- I am gonna do it "manually" first
-        lspconfig["solargraph"].setup({ capabilities = capabilities })
-        lspconfig["lua_ls"].setup({ capabilities = capabilities })
+        vim.diagnostic.config({
+          virtual_text = true, -- Or use a table for more detail: { prefix = "●" }
+          signs = true,
+          underline = true,
+          update_in_insert = false,
+          severity_sort = true,
+        })
+
+        vim.lsp.config("*", {
+          capabilities = require("blink.cmp").get_lsp_capabilities()
+        })
+        -- vim.lsp.enable("solargraph")
+        vim.lsp.enable("ruby_lsp")
+        vim.lsp.enable("lua_ls")
       end,
     },
-    -- init.lua:
+    {
+      "pmizio/typescript-tools.nvim",
+      dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+      opts = {},
+    },
     {
       'nvim-telescope/telescope.nvim',
-      tag = '0.1.8',
-      dependencies = { 'nvim-lua/plenary.nvim' },
+      version = '*',
+      dependencies = {
+        'nvim-lua/plenary.nvim',
+        -- optional but recommended
+        { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+      },
       config = function()
+        require('telescope').setup({
+          defaults = {
+            -- file_ignore_patterns = { "node_modules/", ".git/", ".pyc/", ".mypy_cache/", "postgres_data/", ".rustup/" },
+            mappings = {
+              n = {
+                ["dd"] = require('telescope.actions').delete_buffer, -- Delete in normal mode
+              },
+            }
+          },
+          pickers = {
+            find_files = {
+              hidden = true,
+              no_ignore = true,
+            },
+            live_grep = {
+              additional_args = function(opts)
+                return {
+                  "--hidden",
+                  -- "--no-ignore"
+                }
+              end
+            }
+          }
+        })
         local builtin = require('telescope.builtin')
-        vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
+        vim.keymap.set('n', '<leader>ff', function()
+          builtin.find_files({})
+        end, { desc = 'Telescope find files' })
         vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
         vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
         vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
       end
-    },
-    {
-      "webhooked/kanso.nvim",
-      lazy = false,
-      priority = 1000,
-      config = function()
-        vim.cmd.colorscheme("kanso-ink")
-      end,
     },
     {
       "nvim-treesitter/nvim-treesitter",
@@ -395,6 +439,8 @@ require("lazy").setup({
         require 'nvim-treesitter.configs'.setup {
           -- A list of parser names, or "all" (the listed parsers MUST always be installed)
           ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "markdown", "markdown_inline", "ruby", "editorconfig" },
+          modules = {},
+          ignore_install = {},
 
           -- Install parsers synchronously (only applied to `ensure_installed`)
           sync_install = false,
@@ -411,7 +457,7 @@ require("lazy").setup({
             -- list of language that will be disabled
             -- disable = { "c", "rust" },
             -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
-            disable = function(lang, buf)
+            disable = function(_, buf)
               local max_filesize = 100 * 1024 -- 100 KB
               local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
               if ok and stats and stats.size > max_filesize then
@@ -429,70 +475,87 @@ require("lazy").setup({
       end
     },
     {
-      "epwalsh/obsidian.nvim",
-      version = "*", -- recommended, use latest release instead of latest commit
-      lazy = true,
-      event = {
-        -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
-        -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/*.md"
-        -- refer to `:h file-pattern` for more examples
-        "BufReadPre " .. vim.fn.expand(vim.env.OBSIDIAN_PERSONAL_NOTES_DIR) .. "*.md",
-        "BufNewFile " .. vim.fn.expand(vim.env.OBSIDIAN_PERSONAL_NOTES_DIR) .. "*.md",
-      },
-      dependencies = {
-        -- Required.
-        "nvim-lua/plenary.nvim",
-      },
-      opts = {
-        ui = {
-          enable = false,
-          checkboxes = {
-            [" "] = { char = "☐", hl_group = "ObsidianTodo" },
-            ["-"] = { char = "☐", hl_group = "ObsidianTodo" },
-            ["x"] = { char = "✔", hl_group = "ObsidianDone" },
-          }
-        },
-        workspaces = {
-          {
-            name = "main",
-            path = vim.fn.expand(vim.env.OBSIDIAN_PERSONAL_NOTES_DIR)
-          },
-        },
-      },
+      "ahmedkhalf/project.nvim",
+      config = function()
+        require("project_nvim").setup {
+          show_hidden = true,
+          silent_chdir = false,
+          patterns = { ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json", "Gemfile" },
+        }
+      end
     },
+    -- {
+    --   "epwalsh/obsidian.nvim",
+    --   version = "*", -- recommended, use latest release instead of latest commit
+    --   lazy = true,
+    --   event = {
+    --     -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
+    --     -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/*.md"
+    --     -- refer to `:h file-pattern` for more examples
+    --     "BufReadPre " .. vim.fn.expand(vim.env.OBSIDIAN_PERSONAL_NOTES_DIR) .. "*.md",
+    --     "BufNewFile " .. vim.fn.expand(vim.env.OBSIDIAN_PERSONAL_NOTES_DIR) .. "*.md",
+    --   },
+    --   dependencies = {
+    --     -- Required.
+    --     "nvim-lua/plenary.nvim",
+    --   },
+    --   opts = {
+    --     ui = {
+    --       enable = false,
+    --       checkboxes = {
+    --         [" "] = { char = "☐", hl_group = "ObsidianTodo" },
+    --         ["-"] = { char = "☐", hl_group = "ObsidianTodo" },
+    --         ["x"] = { char = "✔", hl_group = "ObsidianDone" },
+    --       }
+    --     },
+    --     workspaces = {
+    --       {
+    --         name = "main",
+    --         path = vim.fn.expand(vim.env.OBSIDIAN_PERSONAL_NOTES_DIR)
+    --       },
+    --     },
+    --   },
+    -- },
     {
       'MeanderingProgrammer/render-markdown.nvim',
       dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
       opts = {},
     },
     {
-      "m00qek/baleia.nvim",
-      version = "*",
-      config = function()
-        vim.g.baleia = require("baleia").setup({})
-
-        -- Command to colorize the current buffer
-        vim.api.nvim_create_user_command("ColorizeAscii", function()
-          vim.g.baleia.once(vim.api.nvim_get_current_buf())
-        end, { bang = true })
-
-        -- Command to show logs
-        vim.api.nvim_create_user_command("BaleiaLogs", vim.g.baleia.logger.show, { bang = true })
-      end,
-    },
-    {
-      "hedyhli/markdown-toc.nvim",
-      ft = "markdown",  -- Lazy load on markdown filetype
-      cmd = { "Mtoc" }, -- Or, lazy load on "Mtoc" command
-      opts = {
-        -- Your configuration here (optional)
-      },
-    },
-    {
       'SCJangra/table-nvim',
       ft = 'markdown',
       opts = {},
-    }
+    },
+    {
+      'nvim-orgmode/orgmode',
+      event = 'VeryLazy',
+      config = function()
+        require('orgmode').setup({
+          org_agenda_files = '~/orgfiles/**/*',
+          org_default_notes_file = '~/orgfiles/refile.org',
+          org_capture_templates = {
+            d = {
+              description = 'create current day timebox',
+              template = table.concat(vim.fn.readfile(vim.fn.expand("~/orgfiles/timebox_template.txt")), "\n"),
+              target = '~/orgfiles/timebox.org'
+            },
+          }
+        })
+        -- Experimental LSP support
+        vim.lsp.enable('org')
+      end,
+      dependencies = {
+        { 'lukas-reineke/headlines.nvim', config = true }, -- optional nicety
+      },
+    },
+    {
+      "webhooked/kanso.nvim",
+      lazy = false,
+      priority = 1000,
+      config = function()
+        vim.cmd.colorscheme("kanso-ink")
+      end,
+    },
   },
   checker = { enabled = true },
 })
