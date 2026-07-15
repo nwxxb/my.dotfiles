@@ -1,0 +1,3 @@
+--ignore=\.git
+--ignore=\README.*
+--ignore=\.DS_Store
