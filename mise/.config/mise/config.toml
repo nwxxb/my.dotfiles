@@ -1,0 +1,35 @@
+[tools]
+"aqua:Automattic/harper/harper-ls" = "latest"
+"aqua:junegunn/fzf" = "latest"
+"aqua:koalaman/shellcheck" = "latest"
+"aqua:peteretelej/tree" = "latest"
+"aqua:rvben/rumdl" = "latest"
+"aqua:sharkdp/fd" = "latest"
+"aqua:tree-sitter/tree-sitter" = "latest"
+fastfetch = "latest"
+"gem:neovim" = "latest"
+"gem:ruby-lsp" = "latest"
+"github:jgm/pandoc" = "latest"
+go = "1.26.2"
+"go:golang.org/x/tools/gopls" = "latest"
+hugo-extended = "latest"
+k6 = "latest"
+lazydocker = "latest"
+lazygit = "latest"
+lua-language-server = "latest"
+neovim = "stable"
+node = "24.11.1"
+"npm:prettier" = "latest"
+"npm:typescript" = "latest"
+"npm:typescript-language-server" = "latest"
+"npm:yarn" = "latest"
+opencode = "latest"
+ripgrep = "latest"
+ruby = "3.1.2"
+stylua = "latest"
+vivid = "latest"
+
+[settings]
+ruby.compile = false
+
+[env]
